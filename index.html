@@ -155,21 +155,24 @@
         <!-- SDOH Map Script -->
             <script>
             (async () => {
-                // Fetch US counties map data
+                console.log("Fetching map data...");
                 const mapData = await fetch(
                     'https://code.highcharts.com/mapdata/countries/us/us-all-all.topo.json'
                 ).then(response => response.json());
 
-                // Fetch SDOH vulnerability data from CSV file
-                const data = await fetch('/County_SDOH_Vulnerability_Scores.csv')
+                console.log("Fetching SDOH vulnerability data...");
+                const data = await fetch('County_SDOH_Vulnerability_Scores.csv') // Updated to reference CSV in the same folder
                     .then(response => response.text())
                     .then(csv => {
                         const parsedData = Papa.parse(csv, { header: true });
+                        console.log("Parsed Data:", parsedData.data);
                         return parsedData.data.map(item => ({
                             'hc-key': item['CountyFIPS'], // Ensure correct matching with the county codes
                             'value': parseFloat(item['Overall SDOH Vulnerability Score']) // Replace with your actual column name
                         }));
                     });
+
+                console.log("Data for counties:", data);
 
                 // Add state acronym for tooltip
                 mapData.objects.default.geometries.forEach(g => {
@@ -182,7 +185,6 @@
 
                 document.getElementById('container').innerHTML = 'Rendering map...';
 
-                // Create the map
                 setTimeout(function () {
                     Highcharts.mapChart('container', {
                         chart: {
