@@ -155,112 +155,138 @@
             <script src="assets/js/main.js"></script>
 
         <!-- SDOH Map Script -->
-            <script>
-            (async () => {
-                console.log("Fetching map data...");
-                const mapData = await fetch(
-                    'https://code.highcharts.com/mapdata/countries/us/us-all-all.topo.json'
-                ).then(response => response.json());
-
-                console.log("Fetching SDOH vulnerability data...");
-                const data = await fetch('https://vishie-hub.github.io/screening-recommender/County_SDOH_Vulnerability_Scores.csv')
-                    .then(response => response.text())
-                    .then(csv => {
-                        const parsedData = Papa.parse(csv, { header: true });
-                        console.log("Parsed Data:", parsedData.data);
-                        return parsedData.data.map(item => ({
-                            'hc-key': item['CountyFIPS'], // Ensure correct matching with the county codes
-                            'value': parseFloat(item['Overall SDOH Vulnerability Score']) // Replace with your actual column name
-                        }));
-                    });
-
-                console.log("Data for counties:", data);
-
-                // Add state acronym for tooltip
-                mapData.objects.default.geometries.forEach(g => {
-                    const properties = g.properties;
-                    if (properties['hc-key']) {
-                        properties.name = properties.name + ', ' +
-                            properties['hc-key'].substr(3, 2).toUpperCase();
-                    }
-                });
-
-                document.getElementById('container').innerHTML = 'Rendering map...';
-
-                setTimeout(function () {
-                    Highcharts.mapChart('container', {
-                        chart: {
-                            map: mapData,
-                            height: '80%'
-                        },
-
-                        title: {
-                            text: 'SDOH Vulnerability Scores Across US Counties',
-                            align: 'left'
-                        },
-
-                        accessibility: {
-                            description: 'Map showing SDOH vulnerability scores by county.'
-                        },
-
-                        legend: {
-                            layout: 'vertical',
-                            align: 'right',
-                            margin: 0,
-                            backgroundColor: 'rgba(255, 255, 255, 0.85)'
-                        },
-
-                        mapNavigation: {
-                            enabled: true
-                        },
-
-                        colorAxis: {
-                            min: 0,
-                            max: 1,
-                            tickInterval: 0.1,
-                            stops: [
-                                [0, '#F1EEF6'],
-                                [0.5, '#900037'],
-                                [1, '#500007']
-                            ],
-                            labels: {
-                                format: '{value}'
-                            }
-                        },
-
-                        plotOptions: {
-                            mapline: {
-                                showInLegend: false,
-                                enableMouseTracking: false
-                            }
-                        },
-
-                        series: [{
-                            data: data,
-                            joinBy: ['hc-key', 'code'],
-                            name: 'SDOH Vulnerability Score',
-                            tooltip: {
-                                valueSuffix: ''
-                            },
-                            borderWidth: 0.5,
-                            shadow: false,
-                            accessibility: {
-                                enabled: false
-                            }
-                        }, {
-                            type: 'mapline',
-                            name: 'State borders',
-                            color: 'white',
-                            shadow: false,
-                            borderWidth: 2,
-                            accessibility: {
-                                enabled: false
-                            }
-                        }]
-                    });
-                }, 0);
-            })();
-            </script>
+		<script src="https://code.highcharts.com/highcharts.js"></script> <!-- Highcharts Library -->
+		<script src="https://code.highcharts.com/modules/map.js"></script> <!-- Highcharts Map Module -->
+		<script src="https://code.highcharts.com/mapdata/countries/us/us-all-all.topo.json"></script> <!-- US Map Data -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script> <!-- CSV Parser -->
+		
+		<script>
+		(async () => {
+			console.log("Fetching map data...");
+			const mapData = await fetch(
+				'https://code.highcharts.com/mapdata/countries/us/us-all-all.topo.json'
+			).then(response => response.json())
+			.catch(err => {
+				console.error('Error fetching map data:', err);
+				document.getElementById('container').innerHTML = 'Error loading map data.';
+				return;
+			});
+		
+			if (!mapData) {
+				return;
+			}
+		
+			console.log("Map Data fetched successfully.");
+		
+			console.log("Fetching SDOH vulnerability data...");
+			const data = await fetch('https://vishie-hub.github.io/screening-recommender/County_SDOH_Vulnerability_Scores.csv')
+				.then(response => response.text())
+				.then(csv => {
+					const parsedData = Papa.parse(csv, { header: true });
+					console.log("Parsed CSV Data:", parsedData.data);
+					return parsedData.data.map(item => ({
+						'hc-key': item['CountyFIPS'], // Make sure this column matches your CSV
+						'value': parseFloat(item['Overall SDOH Vulnerability Score']) // Ensure the score column is numeric
+					}));
+				})
+				.catch(err => {
+					console.error('Error fetching or parsing SDOH data:', err);
+					document.getElementById('container').innerHTML = 'Error loading or parsing SDOH data.';
+					return [];
+				});
+		
+			if (!data || data.length === 0) {
+				return;
+			}
+		
+			console.log("Data for counties:", data);
+		
+			// Add state acronym for tooltip
+			mapData.objects.default.geometries.forEach(g => {
+				const properties = g.properties;
+				if (properties['hc-key']) {
+					properties.name = properties.name + ', ' +
+						properties['hc-key'].substr(3, 2).toUpperCase();
+				}
+			});
+		
+			document.getElementById('container').innerHTML = 'Rendering map...';
+		
+			setTimeout(function () {
+				Highcharts.mapChart('container', {
+					chart: {
+						map: mapData,
+						height: '80%'
+					},
+		
+					title: {
+						text: 'SDOH Vulnerability Scores Across US Counties',
+						align: 'left'
+					},
+		
+					accessibility: {
+						description: 'Map showing SDOH vulnerability scores by county.'
+					},
+		
+					legend: {
+						layout: 'vertical',
+						align: 'right',
+						margin: 0,
+						backgroundColor: 'rgba(255, 255, 255, 0.85)'
+					},
+		
+					mapNavigation: {
+						enabled: true
+					},
+		
+					colorAxis: {
+						min: 0,
+						max: 1,
+						tickInterval: 0.1,
+						stops: [
+							[0, '#F1EEF6'],
+							[0.5, '#900037'],
+							[1, '#500007']
+						],
+						labels: {
+							format: '{value}'
+						}
+					},
+		
+					plotOptions: {
+						mapline: {
+							showInLegend: false,
+							enableMouseTracking: false
+						}
+					},
+		
+					series: [{
+						data: data,
+						joinBy: ['hc-key', 'code'],
+						name: 'SDOH Vulnerability Score',
+						tooltip: {
+							valueSuffix: ''
+						},
+						borderWidth: 0.5,
+						shadow: false,
+						accessibility: {
+							enabled: false
+						}
+					}, {
+						type: 'mapline',
+						name: 'State borders',
+						color: 'white',
+						shadow: false,
+						borderWidth: 2,
+						accessibility: {
+							enabled: false
+						}
+					}]
+				});
+			}, 0);
+		})();
+		</script>
+		
 
     </body>
 </html>
