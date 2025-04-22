@@ -161,7 +161,7 @@
                 ).then(response => response.json());
 
                 // Fetch SDOH vulnerability data from CSV file
-                const data = await fetch('/path/to/County-Level-SDOH-Vulnerability-Scores.csv')
+                const data = await fetch('/County_SDOH_Vulnerability_Scores.csv')
                     .then(response => response.text())
                     .then(csv => {
                         const parsedData = Papa.parse(csv, { header: true });
