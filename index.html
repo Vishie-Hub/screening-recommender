@@ -23,7 +23,7 @@
 						<div class="content">
 							<div class="inner">
 								<h1>Preventative Screening Recommender</h1>
-								<p> Fill out the Health Form below for screening recommendations (note: this is not medical advise)</p>
+								<p> Fill out the Health Form below for screening recommendations (note: this is not medical advice)</p>
 							</div>
 						</div>
 						<nav>
@@ -44,7 +44,45 @@
 								<h2 class="major">Health Form</h2>
 								<form id="screeningForm" method="post" action="#">
 									<div class="fields">
-										<!-- Form Fields... -->
+										<div class="field half">
+											<label for="age">Age</label>
+											<input type="text" name="age" id="age" placeholder="Enter your age"/>
+										</div>
+							
+										<div class="field half">
+											<label for="gender">Gender</label>
+											<input type="text" name="gender" id="gender" placeholder="e.g., Male, Female, Other" />
+										</div>
+							
+										<div class="field half">
+											<label for="bmi">BMI</label>
+											<input type="text" name="bmi" id="bmi" placeholder="e.g., 22.5"/>
+										</div>
+
+										<div class="field half">
+											<label for="smoker">Smoker Status</label>
+											<input type="text" name="smoker" id="smoker" placeholder="e.g., Yes or No" />
+										</div>
+							
+										<div class="field">
+											<label for="family_history">Family History of Chronic Disease</label>
+											<input type="text" name="family_history" id="family_history" placeholder="e.g., Diabetes, Heart Disease" />
+										</div>
+							
+										<div class="field half">
+											<label for="physical_activity">Weekly Physical Activity (hrs)</label>
+											<input type="text" name="physical_activity" id="physical_activity" placeholder="e.g., 5.5"/>
+										</div>
+							
+										<div class="field half">
+											<label for="blood_pressure">Blood Pressure (mmHg)</label>
+											<input type="text" name="blood_pressure" id="blood_pressure" placeholder="e.g., 120/80" />
+										</div>
+
+										<div class="field">
+											<label for="cholesterol">Cholesterol Level (mg/dL)</label>
+											<input type="text" name="cholesterol" id="cholesterol" placeholder="e.g., 190"/>
+										</div>
 									</div>
 									<ul class="actions">
 										<li><input type="submit" value="Submit Data" class="primary" /></li>
@@ -54,7 +92,7 @@
 								<div id="result" style="display:none; margin-top: 20px;"></div>
 							</article>
 
-						<!-- SDOH Map -->
+						<!-- SDOH Map Section -->
 						<article id="sdohmap">
 							<h2 class="major">SDOH Vulnerability Map</h2>
 							<div id="container" style="height: 80%; width: 100%;"></div>
@@ -63,13 +101,36 @@
 						<!-- About -->
 							<article id="about">
 								<h2 class="major">About</h2>
-								<!-- About content... -->
+								<span class="image main"><img src="images/pic03.jpg" alt="" /></span>
+								<p>Lorem ipsum dolor sit amet, consectetur et adipiscing elit. Praesent eleifend dignissim arcu, at eleifend sapien imperdiet ac. Aliquam erat volutpat. Praesent urna nisi, fringila lorem et vehicula lacinia quam. Integer sollicitudin mauris nec lorem luctus ultrices. Aliquam libero et malesuada fames ac ante ipsum primis in faucibus. Cras viverra ligula sit amet ex mollis mattis lorem ipsum dolor sit amet.</p>
 							</article>
 
 						<!-- Contact -->
 							<article id="contact">
 								<h2 class="major">Contact</h2>
-								<!-- Contact form... -->
+								<form method="post" action="#">
+									<div class="fields">
+										<div class="field half">
+											<label for="name">Name</label>
+											<input type="text" name="name" id="name" />
+										</div>
+										<div class="field half">
+											<label for="email">Email</label>
+											<input type="text" name="email" id="email" />
+										</div>
+										<div class="field">
+											<label for="message">Message</label>
+											<textarea name="message" id="message" rows="4"></textarea>
+										</div>
+									</div>
+									<ul class="actions">
+										<li><input type="submit" value="Send Message" class="primary" /></li>
+										<li><input type="reset" value="Reset" /></li>
+									</ul>
+								</form>
+								<ul class="icons">
+									<li><a href="#" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+								</ul>
 							</article>
 
 					</div>
@@ -93,7 +154,7 @@
 				).then(response => response.json());
 
 				// Fetch SDOH vulnerability data from CSV file
-				const data = await fetch('/path/to/County-Level-SDOH-Vulnerability-Scores.csv')
+				const data = await fetch('csv_files/County_SDOH_Vulnerability_Scores.csv')
 					.then(response => response.text())
 					.then(csv => {
 						const parsedData = Papa.parse(csv, { header: true });
